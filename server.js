@@ -158,11 +158,14 @@ app.get('/bracelet', async (req, res) => {
 app.get('/bracelet/:id', async (req, res) => {
   try {
     const braceletId = req.params.id;
-    const bracelet = await BraceletData.findOne({ braceletId: braceletId });
-    if (!bracelet) {
-      return res.status(404).json({ error: 'Bracelet not found. ' + bracelet });
+    const mostRecentData = await db.collection('yourCollection')
+        .find({ braceletId: braceletId }) // Filter by braceletId
+        .sort({ timestamp: -1 }) // Sort by timestamp in descending order
+        .limit(1); // Get only the most recent document
+    if (!mostRecentData) {
+      return res.status(404).json({ error: 'Bracelet not found.'});
     }
-    res.json(bracelet);
+    res.json(mostRecentData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -239,6 +242,14 @@ app.post('/new_bracelet', async (req, res) => {
     // Validate inputs
     if (!nickname) {
       return res.status(400).json({ error: 'Bracelet nickname is required.' });
+    }
+
+    // Check if the bracelet already exists
+    const existingBracelet = await Bracelet.findOne({ nickname });
+    if (existingBracelet) {
+      res.status(201).json(existingBracelet);
+      return;
+      //return res.status(409).json({ error: 'Bracelet with this nickname already exists.' });
     }
 
     // Create and save the new bracelet
