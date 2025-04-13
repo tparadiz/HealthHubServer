@@ -253,7 +253,7 @@ app.post('/new_bracelet', async (req, res) => {
 
 // GETTING DATA FROM ESP
 app.post('/posting_data', async (req, res) => {
-  try {s
+  try {
     const { braceletId, heart_rate, temperature, saturation } = req.body;
     // Validate inputs
     if (!braceletId || !heart_rate || !temperature || !saturation) {
