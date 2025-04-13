@@ -158,9 +158,8 @@ app.get('/bracelet', async (req, res) => {
 app.get('/bracelet/:id', async (req, res) => {
   try {
     const braceletId = req.params.id;
-    const mostRecentData = await db.collection('yourCollection')
-        .find({ braceletId: braceletId }) // Filter by braceletId
-        .sort({ timestamp: -1 }) // Sort by timestamp in descending order
+    const mostRecentData = await Bracelet.find({ braceletId: braceletId })  // Filter by braceletId
+        .sort({ timestamp: -1 }) // Sort by timestamp in descending order (most recent first)
         .limit(1); // Get only the most recent document
     if (!mostRecentData) {
       return res.status(404).json({ error: 'Bracelet not found.'});
